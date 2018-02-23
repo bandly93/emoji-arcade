@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { updateData } from './redux/GameModule.js';
 
 class Game extends Component{
 	render(){
@@ -10,7 +12,20 @@ class Game extends Component{
 	}
 }
 
-export default Game;
+const mapDispatchToProps = (dispatch) => {
+	return {
+		updateData:(data) => dispatch(updateData(data)) 	
+	}
+}
+
+const mapStateToProps = (state) => {
+	return{
+		redux:state
+
+	}
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(Game);
 
 /*
 let canvas = document.getElementById('myCanvas');
