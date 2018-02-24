@@ -1,4 +1,12 @@
-.myCanvas canvas{	
-	margin-left:12.5%;
-
+body{
+	text-align:center;
 }
+
+
+.myCanvas{	
+	margin-left:12.5%;
+	margin-right:12.5%;
+	background-color:black;
+}
+
+

@@ -12,16 +12,12 @@ class Game extends Component{
 		
 	canvas = () => {
 		const { screenSize } = this.props.view;
-		let style = {
-			'backgroundColor':'black',
-			'marginLeft':'12.5%',
-		}	
+	
 		return<canvas 
 			id = 'myCanvas'
 			className = 'myCanvas' 
 			width = {(screenSize*.75)} 
-			height = {(((screenSize/16)*9)*.75)}
-			style = {style}> 
+			height = {(((screenSize/16)*9)*.75)}>
 		</canvas>
 	}
 	
