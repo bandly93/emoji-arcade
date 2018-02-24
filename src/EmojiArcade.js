@@ -8,14 +8,18 @@ class Game extends Component{
 		super(props);
 		const { updateView } = this.props;
 		window.addEventListener('resize',()=>updateView(window.innerWidth));
-		this.width = 960;
-		this.height = 640;
+		
+		this.width = 480;
+		this.height = 320;
 		this.x = this.width/2;
-		this.y = this.height-150;
+		this.y = this.height-300;
 		this.dx = 2;
 		this.dy = 0;
 		this.ballRadius = 10;
 
+	}
+	componentDidMount(){
+		setInterval(this.draw,15)	
 	}
 	
 	canvas = () => {
@@ -30,9 +34,8 @@ class Game extends Component{
 	draw = () => {
 		const { canvas } = this.refs;
 		var ctx = canvas.getContext('2d');
-		let { ballRadius } = this;
+		let { ballRadius} = this;
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-
 
 		if(this.x + this.dx > canvas.width-ballRadius || this.x + this.dx < ballRadius) {
 			this.dx = -this.dx;
@@ -46,12 +49,9 @@ class Game extends Component{
 		this.drawBall();
 	}
 
-
-	
 	drawBall = () => {
 		const { canvas } = this.refs;
-		let ctx = canvas.getContext('2d');
-		
+		let ctx = canvas.getContext('2d');	
 		ctx.beginPath();
 		ctx.arc(this.x,this.y,this.ballRadius,0,Math.PI*2);
 		ctx.fillStyle = 'orange';
@@ -60,9 +60,7 @@ class Game extends Component{
 	}
 	
 	render(){
-		const { canvas } = this.refs	
-			
-		canvas?setInterval(this.draw,15):null
+		const { canvas } = this.refs
 		return(
 			<div>
 				<h1>Welcome to the Emoji - Arcade Game </h1>
