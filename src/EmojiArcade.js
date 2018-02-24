@@ -5,10 +5,7 @@ import { updateView } from './redux/viewModule.js';
 
 class Game extends Component{
 	constructor(props){
-		super(props);
-		const { updateView } = this.props;
-		window.addEventListener('resize',()=>updateView(window.innerWidth));
-		
+		super(props);	
 		this.width = 480;
 		this.height = 320;
 		this.x = this.width/2;
@@ -16,10 +13,19 @@ class Game extends Component{
 		this.dx = 2;
 		this.dy = 0;
 		this.ballRadius = 10;
-
 	}
 	componentDidMount(){
-		setInterval(this.draw,15)	
+		setInterval(this.draw,15)
+		const { updateView } = this.props;
+		window.addEventListener('resize',()=>updateView(window.innerWidth));
+		document.addEventListener('keydown',this.keyDownHandler,false);
+		document.addEventListener('keyup',this.keyUpHandler,false);
+	}
+
+	keyDownHandler = (e) => {	
+		if(e.keyCode == 32){
+			this.switchBallDirection();
+		}
 	}
 	
 	canvas = () => {
@@ -30,27 +36,42 @@ class Game extends Component{
 			height = {this.height}>
 		</canvas>
 	}
+
+	switchBallDirection = () => {
+		if(this.dx === 0){
+			this.dx = 2;
+			this.dy = 0;
+		}else{
+			this.dx = 0;
+			this.dy = 2;
+		}
+	}	
+
+
+	boundaries = (canvas) => {
+		const { ballRadius } = this;	
+		if(this.x + this.dx > canvas.width-ballRadius || this.x + this.dx < ballRadius) {
+			this.dx = -this.dx;
+			this.ballRadius += 2;
+		}
+		if(this.y + this.dy > canvas.height-ballRadius || this.y + this.dy < ballRadius) {
+			this.dy = -this.dy;
+			this.ballRadius += 2;
+		}
+ 	}
 	
 	draw = () => {
 		const { canvas } = this.refs;
 		var ctx = canvas.getContext('2d');
-		let { ballRadius} = this;
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-		if(this.x + this.dx > canvas.width-ballRadius || this.x + this.dx < ballRadius) {
-			this.dx = -this.dx;
-		}
-		if(this.y + this.dy > canvas.height-ballRadius || this.y + this.dy < ballRadius) {
-			this.dy = -this.dy;
-		}
-			
+		this.boundaries(canvas);	
+					
 		this.x += this.dx;
-		this.y += this.dy;	
-		this.drawBall();
+		this.y += this.dy;
+		this.drawBall(canvas);
 	}
 
-	drawBall = () => {
-		const { canvas } = this.refs;
+	drawBall = (canvas) => {
 		let ctx = canvas.getContext('2d');	
 		ctx.beginPath();
 		ctx.arc(this.x,this.y,this.ballRadius,0,Math.PI*2);
@@ -60,7 +81,6 @@ class Game extends Component{
 	}
 	
 	render(){
-		const { canvas } = this.refs
 		return(
 			<div>
 				<h1>Welcome to the Emoji - Arcade Game </h1>
