@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-	entry: './src/app.js',
+	entry: './src/public/app.js',
 	output : {
 		filename:'bundle.js',
 		path:path.resolve(__dirname,'dist')
@@ -19,6 +19,9 @@ module.exports = {
 					plugins:['transform-class-properties']
 
 				}
+			},
+			{
+				test : /\.css$/,use:[{loader:'style-loader'},{loader:'css-loader'}]
 			}
 		]
 	},
