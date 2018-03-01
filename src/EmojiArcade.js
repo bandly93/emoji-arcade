@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component,Fragment } from 'react';
 import { connect } from 'react-redux';
 import { updateData } from './redux/GameModule.js';
 import { updateView } from './redux/ViewModule.js';
 import Ball from './Ball.js';
+import Board from './Peg.js';
 
 class Game extends Component{
 	//refers to the canvas itself.
@@ -14,38 +15,31 @@ class Game extends Component{
 			context:null
 		}
 	}
+	
+	createBallAndDraw = (args) => {
+		const { context } = this.state
+		let ball = new Ball({context,...args})
+		ball.draw();
+		ball.update();
+	}
+	
+	createBoardAndDraw = (args) => {
+		const { context } = this.state;
+		let board = new Board({context,...args});
+		board.draw();
+	}
 
 	componentDidMount(){
 		const { updateData,updateView } = this.props;
 		const { canvas } = this.refs;
-
-		//updateData({context:canvas.getContext('2d')})
 		this.setState({context:canvas.getContext('2d')},()=>this.startGame());		
-		window.addEventListener('resize',()=>updateView(window.innerWidth));
-		
+		window.addEventListener('resize',()=>updateView(window.innerWidth));	
 	}
 
 	startGame(){
-		//draw a ball
-		const { context } = this.state;
-		
-		for(let i = 0; i< 6; i++){
-			let ball = new Ball();
-
-			ball.x = ball.x+ (i*17)
-			ball.y = ball.y + (i * 25 )
-			i % 2 ? ball.fillStyle = 'green': ball.fillStyle = 'orange'
-			
-			func(ball)
-		}	
-			
-		
-		
-		function func(ball){	
-			ball.draw(context)
-			ball.update(context);
-		}
-			
+		this.createBallAndDraw({x:50,y:30,fillStyle:'blue'});
+		this.createBallAndDraw();
+		this.createBoardAndDraw();	
 	}
 		
 	canvas = () => {
@@ -59,15 +53,13 @@ class Game extends Component{
 	
 	render(){
 		return(
-			<div>
+			<Fragment>
 				<h1>Welcome to the Emoji - Arcade Game </h1>
 				{this.canvas()}
-			</div>
+			</Fragment>
 		)
 	}
 }
-
-
 
 const mapDispatchToProps = (dispatch) => {
 	return {

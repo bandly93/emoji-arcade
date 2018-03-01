@@ -1,14 +1,16 @@
 export default class Ball{
-	constructor(){
-		this.x = 300;
-		this.y = 200;
+	constructor({context,x,y,ballRadius,fillStyle}){
+		this.x = x || 300;
+		this.y = y || 200;
 		this.starting_x = this.x;
 		this.starting_y = this.y;
-		this.fillStyle = 'orange';
+		this.fillStyle = fillStyle || 'orange';
 		this.dx = 6;
-		this.dy = 0;
-		this.ballRadius = 10;
-
+		this.dy = 3;
+		this.ballRadius = ballRadius || 10;
+		this.context = context;
+		this.canvas_w = context.canvas.width;
+		this.canvas_h = context.canvas.height;	
 		document.addEventListener('keydown',this.keyDownHandler,false);
 		document.addEventListener('keyup',this.keyUpHandler,false);
 	}
@@ -29,40 +31,39 @@ export default class Ball{
 		}
 	}	
 	
-	draw(context){
-		context.beginPath();
-		context.arc(this.starting_x,this.starting_y,this.ballRadius,0,Math.PI*2);
-		context.fillStyle = this.fillStyle;
-		context.fill();
-		context.closePath();
+	draw(){
+		this.context.beginPath();
+		this.context.arc(this.starting_x,this.starting_y,this.ballRadius,0,Math.PI*2);	
+		this.context.fillStyle = this.fillStyle;
+		this.context.fill();
+		this.context.closePath();
 	}
 		
-	boundaries = (context) => {
+	checkBoundaries = (x,y) => {
 		//left to right	
-		if(this.x + this.dx > context.canvas.width-this.ballRadius || this.x + this.dx < this. ballRadius) {
+		if(x + this.dx > this.canvas_w - this.ballRadius || x + this.dx < this.ballRadius) {
 			this.dx = -this.dx;
 		}
 		//up and down
-		if(this.y + this.dy > context.canvas.height-this.ballRadius || this.y + this.dy <this. ballRadius) {
+		if(y + this.dy > this.canvas_h - this.ballRadius || y + this.dy < this.ballRadius) {
 			//this.dy = -this.dy;
 			this.dy = -this.dy
 		}
  	}
 	
-	move(context){
-		context.beginPath();
-		context.arc(this.x,this.y,this.ballRadius,0,Math.PI*2);
-		context.fillStyle = this.fillStyle;
-		context.fill();
-		context.closePath();
-		this.boundaries(context)
-		
-		requestAnimationFrame(()=>this.update(context))
-
+	move(){
+		this.context.beginPath();
+		this.context.arc(this.x,this.y,this.ballRadius,0,Math.PI*2);
+		this.context.fillStyle = this.fillStyle;
+		this.context.fill();
+		this.context.closePath();
+		this.checkBoundaries(this.x,this.y)	
+		requestAnimationFrame(()=>this.update())
 	}
-	update(context){
-		requestAnimationFrame(()=>this.move(context))
-		context.clearRect(0,0,context.canvas.width,context.canvas.height)
+
+	update(){
+		requestAnimationFrame(()=>this.move())
+		this.context.clearRect(0,0,this.canvas_w,this.canvas_h)
 		this.x += this.dx;
 		this.y += this.dy;	
 	}	
