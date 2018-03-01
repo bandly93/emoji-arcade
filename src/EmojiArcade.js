@@ -38,7 +38,6 @@ class Game extends Component{
 
 	startGame(){
 		this.createBallAndDraw({x:50,y:30,fillStyle:'blue'});
-		this.createBallAndDraw();
 		this.createBoardAndDraw();	
 	}
 		

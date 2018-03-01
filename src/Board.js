@@ -6,7 +6,7 @@ class Peg{
 		this.context = context;
 		this.canvas_w = context.canvas.width;
 		this.canvas_h = context.canvas.height;
-		this.pegRadius = 5;
+		this.pegRadius = 3;
 		this.fillStyle = 'white';
 	}
 	
@@ -17,6 +17,10 @@ class Peg{
 		this.context.fill();
 		this.context.closePath();
 		requestAnimationFrame(()=>this.drawPeg());	
+	}
+	physics(){
+
+
 	}	
 }
 
@@ -29,27 +33,45 @@ export default class Board{
 
 	createPegAndDraw = () => {
 		const { width , height } = this.context.canvas
-		let x = 50;
+		let x = 45;
 		let y = 50;	
 		const { context } = this;
-		for ( let i = 0; i < 57; i++){
+		for ( let i = 0; i < 63; i++){
 			//if x is larger than width;
 			if(x > width){
 				//generate new x and y
 				x = x % width;
-				y += 50;
-				let peg = new Peg({context,x,y});
+				y += 35;
+				let peg = new Peg({context,x,y,id:i});
 				peg.drawPeg();
 			}else{
-				let peg = new Peg({context,x,y});
+				let peg = new Peg({context,x,y,id:i});
 				peg.drawPeg();
 
 			}	
-			x += 50;
+			x += 45;
 		}	
+	}
+	
+	drawBottomLines = () => {
+		const {width,height} = this.context.canvas;
+		const numOfLines = 10;
+		
+		let x = width/numOfLines
+				
+		for(let i = 0; i < numOfLines-1; i++){
+			this.context.beginPath();
+			this.context.rect(x*(i+1),270,2,110)
+			this.context.fillStyle = 'white';
+			this.context.fill();
+			this.context.closePath();
+		}
+		
+		requestAnimationFrame(()=>this.drawBottomLines());
 	}
 
 	draw(){
+		this.drawBottomLines();
 		this.createPegAndDraw();
 	}	
 }

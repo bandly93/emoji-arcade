@@ -6,7 +6,7 @@ export default class Ball{
 		this.starting_y = this.y;
 		this.fillStyle = fillStyle || 'orange';
 		this.dx = 6;
-		this.dy = 3;
+		this.dy = 0;
 		this.ballRadius = ballRadius || 10;
 		this.context = context;
 		this.canvas_w = context.canvas.width;
