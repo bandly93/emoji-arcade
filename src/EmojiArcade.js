@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { updateData } from './redux/GameModule.js';
 import { updateView } from './redux/ViewModule.js';
 import Ball from './Ball.js';
-import Board from './Peg.js';
+import Board from './Board.js';
 
 class Game extends Component{
 	//refers to the canvas itself.
