@@ -1,23 +1,27 @@
-let initialState = {
-	count:0
-}
-
 export const UPDATE_DATA = 'UPDATE_DATA';
 
-export const updateData = (data) => {
+export const updateData = (context) => {
 	return{
 		type:UPDATE_DATA,
-		data
+		context
 	}
 }
 
-export const randomReducer = (state = initialState, action) => {
+export const constantsReducer = (state = initialState, action) => {
 	switch(action.type){
 		case UPDATE_DATA:
-			return {...state,...action.data};
+			return {...state,...action.context};
+
 		default:
 			return state;
 	}
 }
 
-export default randomReducer;
+
+let initialState = {
+	context:null
+}
+
+
+
+export default constantsReducer;

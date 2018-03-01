@@ -1,33 +1,111 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { updateView } from './redux/viewModule.js';
+import { updateData } from './redux/GameModule.js';
+import { updateView } from './redux/ViewModule.js';
 
+//import Ball from './Ball.js';
 
-class Game extends Component{
-	constructor(props){
-		super(props);	
-		this.width = 480;
-		this.height = 320;
-		this.x = this.width/2;
-		this.y = this.height-300;
-		this.dx = 2;
+class Ball{
+	constructor(){
+		this.x = 300;
+		this.y = 200;
+		this.starting_x = this.x;
+		this.starting_y = this.y;
+		this.dx = 3;
 		this.dy = 0;
 		this.ballRadius = 10;
-	}
-	componentDidMount(){
-		setInterval(this.draw,15)
-		const { updateView } = this.props;
-		window.addEventListener('resize',()=>updateView(window.innerWidth));
+
 		document.addEventListener('keydown',this.keyDownHandler,false);
 		document.addEventListener('keyup',this.keyUpHandler,false);
 	}
+
 
 	keyDownHandler = (e) => {	
 		if(e.keyCode == 32){
 			this.switchBallDirection();
 		}
 	}
+		
+	switchBallDirection(){
+		if(this.dx === 0){
+			this.dx = 3;
+			this.dy = 0;
+		}else{
+			this.dx = 0;
+			this.dy = 6;
+		}
+	}	
 	
+	draw(context){
+		context.beginPath();
+		context.arc(this.starting_x,this.starting_y,this.ballRadius,0,Math.PI*2);
+		context.fillStyle = 'orange';
+		context.fill();
+		context.closePath();
+	}
+		
+	boundaries = (context) => {
+		//left to right	
+		if(this.x + this.dx > context.canvas.width-this.ballRadius || this.x + this.dx < this. ballRadius) {
+			this.dx = -this.dx;
+		}
+		//up and down
+		if(this.y + this.dy > context.canvas.height-this.ballRadius || this.y + this.dy <this. ballRadius) {
+			//this.dy = -this.dy;
+			this.dy = -this.dy
+			this.ballRadius += 10;
+		}
+ 	}
+	
+	move(context){
+		context.beginPath();
+		context.arc(this.x,this.y,this.ballRadius,0,Math.PI*2);
+		context.fillStyle = 'orange';
+		context.fill();
+		context.closePath();
+		this.boundaries(context)
+		
+		requestAnimationFrame(()=>this.update(context))
+
+	}
+	update(context){
+		requestAnimationFrame(()=>this.move(context))
+		context.clearRect(0,0,context.canvas.width,context.canvas.height)
+		this.x += this.dx;
+		this.y += this.dy;	
+
+	}	
+}
+
+class Game extends Component{
+	//refers to the canvas itself.
+	constructor(props){	
+		super(props);
+		this.width = 480;
+		this.height = 320;
+		this.state = {
+			context:null
+		}
+	}
+
+	componentDidMount(){
+		const { updateData,updateView } = this.props;
+		const { canvas } = this.refs;
+
+		//updateData({context:canvas.getContext('2d')})
+		this.setState({context:canvas.getContext('2d')},()=>this.startGame());		
+		window.addEventListener('resize',()=>updateView(window.innerWidth));
+		
+	}
+	
+	startGame(){
+		//draw a ball
+		const { context } = this.state;
+		let ball = new Ball();
+		ball.draw(context);
+		ball.update(context);	
+	}
+		
 	canvas = () => {
 		return<canvas 
 			ref = 'canvas'
@@ -35,49 +113,6 @@ class Game extends Component{
 			width = {this.width} 
 			height = {this.height}>
 		</canvas>
-	}
-
-	switchBallDirection = () => {
-		if(this.dx === 0){
-			this.dx = 2;
-			this.dy = 0;
-		}else{
-			this.dx = 0;
-			this.dy = 2;
-		}
-	}	
-
-
-	boundaries = (canvas) => {
-		const { ballRadius } = this;	
-		if(this.x + this.dx > canvas.width-ballRadius || this.x + this.dx < ballRadius) {
-			this.dx = -this.dx;
-			this.ballRadius += 2;
-		}
-		if(this.y + this.dy > canvas.height-ballRadius || this.y + this.dy < ballRadius) {
-			this.dy = -this.dy;
-			this.ballRadius += 2;
-		}
- 	}
-	
-	draw = () => {
-		const { canvas } = this.refs;
-		var ctx = canvas.getContext('2d');
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		this.boundaries(canvas);	
-					
-		this.x += this.dx;
-		this.y += this.dy;
-		this.drawBall(canvas);
-	}
-
-	drawBall = (canvas) => {
-		let ctx = canvas.getContext('2d');	
-		ctx.beginPath();
-		ctx.arc(this.x,this.y,this.ballRadius,0,Math.PI*2);
-		ctx.fillStyle = 'orange';
-		ctx.fill();
-		ctx.closePath();
 	}
 	
 	render(){
@@ -90,18 +125,21 @@ class Game extends Component{
 	}
 }
 
+
+
 const mapDispatchToProps = (dispatch) => {
 	return {
-		updateView:(screenSize) => dispatch(updateView(screenSize)) 	
+		updateData:(context) => dispatch(updateData(context)),
+		updateView:(view) => dispatch(updateView(view))
 	}
 }
 
 const mapStateToProps = (state) => {
 	return{
+		constants:state.constants,
 		view:state.view
 	}
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(Game);
-
 
