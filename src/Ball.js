@@ -1,5 +1,8 @@
+import { drawArcObj } from './utils/drawUtils.js';
+
 export default class Ball{
-	constructor({context,x,y,ballRadius,fillStyle}){
+	constructor({context,x,y,radius,fillStyle,id}){	
+		this.id = id;
 		this.x = x || 300;
 		this.y = y || 200;
 		this.starting_x = this.x;
@@ -7,7 +10,7 @@ export default class Ball{
 		this.fillStyle = fillStyle || 'orange';
 		this.dx = 6;
 		this.dy = 0;
-		this.ballRadius = ballRadius || 10;
+		this.radius = radius || 10;
 		this.context = context;
 		this.canvas_w = context.canvas.width;
 		this.canvas_h = context.canvas.height;	
@@ -19,6 +22,13 @@ export default class Ball{
 		if(e.keyCode == 32){
 			this.switchBallDirection();
 		}
+	}
+
+	get Position(){
+		return{
+			x:this.x,
+			y:this.y,
+		}	
 	}
 		
 	switchBallDirection(){
@@ -32,11 +42,7 @@ export default class Ball{
 	}	
 	
 	draw(){
-		this.context.beginPath();
-		this.context.arc(this.starting_x,this.starting_y,this.ballRadius,0,Math.PI*2);	
-		this.context.fillStyle = this.fillStyle;
-		this.context.fill();
-		this.context.closePath();
+		drawArcObj(this);		
 	}
 		
 	checkBoundaries = (x,y) => {
@@ -46,23 +52,13 @@ export default class Ball{
 		}
 		//up and down
 		if(y + this.dy > this.canvas_h - this.ballRadius || y + this.dy < this.ballRadius) {
-			//this.dy = -this.dy;
 			this.dy = -this.dy
 		}
  	}
 	
-	move(){
-		this.context.beginPath();
-		this.context.arc(this.x,this.y,this.ballRadius,0,Math.PI*2);
-		this.context.fillStyle = this.fillStyle;
-		this.context.fill();
-		this.context.closePath();
-		this.checkBoundaries(this.x,this.y)	
-		requestAnimationFrame(()=>this.update())
-	}
-
 	update(){
-		requestAnimationFrame(()=>this.move())
+		this.draw();
+		//this.checkBoundaries(this.x,this.y)
 		this.context.clearRect(0,0,this.canvas_w,this.canvas_h)
 		this.x += this.dx;
 		this.y += this.dy;	

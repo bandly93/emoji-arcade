@@ -1,77 +1,72 @@
+import { drawArcObj,drawRectObj } from './utils/drawUtils.js';
+
 class Peg{
 	constructor({context,x,y,id}){
 		this.id = id;
 		this.x = x;
 		this.y = y;
 		this.context = context;
-		this.canvas_w = context.canvas.width;
-		this.canvas_h = context.canvas.height;
-		this.pegRadius = 3;
+		this.radius = 3;
 		this.fillStyle = 'white';
 	}
-	
-	drawPeg(){
-		this.context.beginPath();
-		this.context.arc(this.x,this.y,this.pegRadius,0,Math.PI*2);
-		this.context.fillStyle = this.fillStyle;
-		this.context.fill();
-		this.context.closePath();
-		requestAnimationFrame(()=>this.drawPeg());	
+
+	get Description(){
+		return {
+			x:this.x,
+			y:this.y,
+		}
 	}
-	physics(){
-
-
-	}	
+	
+	drawPeg(){	
+		drawArcObj(this);
+	}		
 }
 
 export default class Board{
-	constructor({context,x,y}){
-		this.canvas_w = context.canvas.width;
-		this.canvas_h = context.canvas.height;	
+	constructor({context,x,y}){	
 		this.context = context;
+		this.pegs = [];	
 	}
-
 	createPegAndDraw = () => {
-		const { width , height } = this.context.canvas
+		const { width } = this.context.canvas;
+		const { context } = this;	
 		let x = 45;
-		let y = 50;	
-		const { context } = this;
-		for ( let i = 0; i < 63; i++){
-			//if x is larger than width;
+		let y = 50;
+		let peg;
+			
+		//if x is outside range generate new x and y;	
+		for ( let i = 0; i < 63; i++){	
 			if(x > width){
-				//generate new x and y
-				x = x % width;
-				y += 35;
-				let peg = new Peg({context,x,y,id:i});
-				peg.drawPeg();
-			}else{
-				let peg = new Peg({context,x,y,id:i});
-				peg.drawPeg();
-
-			}	
+				x = (x + peg.radius) % width;
+				y += 35;			
+			}
+			peg = new Peg({ context,x,y,id:i });	
+			peg.drawPeg();
+			this.pegs.push(peg.Description);
 			x += 45;
-		}	
+		}
 	}
 	
 	drawBottomLines = () => {
-		const {width,height} = this.context.canvas;
-		const numOfLines = 10;
-		
-		let x = width/numOfLines
-				
-		for(let i = 0; i < numOfLines-1; i++){
-			this.context.beginPath();
-			this.context.rect(x*(i+1),270,2,110)
-			this.context.fillStyle = 'white';
-			this.context.fill();
-			this.context.closePath();
-		}
-		
-		requestAnimationFrame(()=>this.drawBottomLines());
+		const { width } = this.context.canvas;
+		const numOfLines = 9;
+			
+		for(let i = 0; i < numOfLines; i++){
+			let data = {
+				x: width/numOfLines * ( i + 1),
+				y: 270,
+				line_width: 2,
+				line_height : 110,
+				fillStyle : 'white',
+				context:this.context
+			}	
+			drawRectObj(data);	
+		}	
 	}
 
 	draw(){
 		this.drawBottomLines();
-		this.createPegAndDraw();
-	}	
+		this.createPegAndDraw();	
+	}
+
 }
