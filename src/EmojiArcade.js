@@ -15,7 +15,7 @@ class Game extends Component{
 			context:null,
 		}
 		this.pegs = [];
-		this.currentBall = {};	
+		this.currentBall = {};
 	}
 
 	componentDidMount(){
@@ -29,40 +29,9 @@ class Game extends Component{
 		const { context } = this.state;
 		let ball = new Ball({context,...args})
 		ball.draw();	
-		
-		//this.updateBallLocation(ball);
-		
 		ball.update();
-		
-
-	}
-
-
-	update(){
-		const {x,y}= this.currentBall;
-		
-		//this.createBallAndDraw({x,y});
-		//console.log(this.currentBall);
-
-
-	}	
-	intersect(){
-		let length = Object.keys(this.pegs).length;
-		for ( let i = 0; i < length; i++){
-			let ball_x = this.currentBall.x;
-			let ball_y = this.currentBall.y;
-			let peg_x = this.pegs[i].x;
-			let peg_y = this.pegs[i].y;
-			
-			let dx = ball_x - peg_x;
-			let dy = ball_y - peg_y;
-			
-			let distance = Math.sqrt(dx*dx + dy*dy);
-			if(distance < 13){
-				console.log('collision between ball and peg', i);
-
-			}	
-		}
+		this.currentBall = ball.Position;
+		console.log(this.currentBall);
 	}
 	
 	createBoardAndDraw = (args) => {
@@ -70,11 +39,44 @@ class Game extends Component{
 		let board = new Board({context,...args});
 		board.draw();
 		this.pegs = board.pegs;
+		board.update();		
+	}
+	
+	update(){
+		const { x,y,dx,dy }= this.currentBall;
+		const { context } = this.state;
+		const { width,height } = context.canvas;
+		//create new ball and board on each frame;
+		context.clearRect(0,0,context.canvas.width,context.canvas.height);	
+		this.createBoardAndDraw({context});
+		this.createBallAndDraw({x,y,dx,dy});
+		this.intersect();	
+		requestAnimationFrame(()=>this.update());	
+	}	
+
+	intersect(){
+		let length = this.pegs.length;
+		let ball_x = this.currentBall.x;
+		let ball_y = this.currentBall.y;
+
+		for ( let i = 0; i < length; i++){
+			let peg_x = this.pegs[i].x;
+			let peg_y = this.pegs[i].y;
+			let dx = ball_x - peg_x;
+			let dy = ball_y - peg_y;
+			let distance = Math.sqrt(dx*dx + dy*dy);	
+			if(distance < 13){
+				console.log('collision between ball and peg', i);
+
+			}	
+		}
 	}
 	
 	startGame(){
-		this.createBallAndDraw({x:50,y:40,fillStyle:'blue',id:1});
+		//create starting ball and build board;
+		this.createBallAndDraw();
 		this.createBoardAndDraw();
+		this.update();
 	}
 		
 	canvas = () => {

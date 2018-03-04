@@ -23,27 +23,29 @@ class Peg{
 }
 
 export default class Board{
-	constructor({context,x,y}){	
+	constructor({context}){	
 		this.context = context;
 		this.pegs = [];	
 	}
 	createPegAndDraw = () => {
 		const { width } = this.context.canvas;
 		const { context } = this;	
-		let x = 45;
+		let x = 35;
 		let y = 50;
 		let peg;
+		let padding = 10;
 			
 		//if x is outside range generate new x and y;	
-		for ( let i = 0; i < 63; i++){	
+		for ( let i = 0; i < 57; i++){		
 			if(x > width){
-				x = (x + peg.radius) % width;
+				let offset = peg.radius + 10;
+				x = (x + offset) % width-offset;
 				y += 35;			
 			}
-			peg = new Peg({ context,x,y,id:i });	
+			peg = new Peg({ context,x,y,id:i});	
 			peg.drawPeg();
 			this.pegs.push(peg.Description);
-			x += 45;
+			x += 50;
 		}
 	}
 	
@@ -67,6 +69,10 @@ export default class Board{
 	draw(){
 		this.drawBottomLines();
 		this.createPegAndDraw();	
+	}
+
+	update(){
+		this.draw();
 	}
 
 }
