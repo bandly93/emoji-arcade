@@ -4,6 +4,7 @@ import { updateData } from './redux/GameModule.js';
 import { updateView } from './redux/ViewModule.js';
 import Ball from './Ball.js';
 import Board from './Board.js';
+import { drawTextObj } from './utils/drawUtils.js';
 
 class Game extends Component{
 	//refers to the canvas itself.
@@ -28,7 +29,7 @@ class Game extends Component{
 	}
 
 	changePath(){	
-		this.ball.setPosition();
+		this.ball.dropBall();
 		this.currentBallLocation = this.ball.Position;
 	}
 	
@@ -55,6 +56,7 @@ class Game extends Component{
 		this.createBoardAndDraw({context});
 		this.createBallAndDraw({x,y,dx,dy});
 		this.intersect();
+		this.display();
 		requestAnimationFrame(()=>this.update());		
 	}	
 
@@ -70,7 +72,7 @@ class Game extends Component{
 			let dy = ball_y - peg_y;
 			let distance = Math.sqrt(dx*dx + dy*dy);	
 			if(distance < 13){
-				console.log('collision between ball and peg', i);
+				//console.log('collision between ball and peg', i);
 			}	
 		}
 	}
@@ -78,7 +80,7 @@ class Game extends Component{
 	startGame(){
 		this.update();
 	}
-		
+	
 	canvas = () => {
 		return<canvas 
 			ref = 'canvas'
@@ -86,6 +88,13 @@ class Game extends Component{
 			width = {this.width} 
 			height = {this.height}>
 		</canvas>
+	}
+
+	display = () => {
+		const { context } = this.state;
+		const { x,y,dx,dy } = this.currentBallLocation;
+		let text = 'x: ' + x + ' y: ' + y + ' dx: ' + dx + ' dy: ' + dy;	
+		drawTextObj({context,text});	
 	}
 	
 	render(){

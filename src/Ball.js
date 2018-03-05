@@ -2,13 +2,13 @@ import { drawArcObj } from './utils/drawUtils.js';
 
 export default class Ball{
 	constructor(args){
-		const { context,x,y,dx,dy,radius,fillStyle,id} = args;	
+		const { context,x,y,dx,dy,radius,fillStyle,id } = args;
 		this.id = id;
 		this.x = x || 100;
 		this.y = y || 25;
 		this.fillStyle = fillStyle || 'orange';
-		this.dx = dx || 3;
-		this.dy = dy || 0;
+		this.dx = dx===0? dx: 3;
+		this.dy = dy? dy: 0;
 		this.radius = radius || 10;
 		this.context = context;
 		this.canvas_w = context.canvas.width;
@@ -22,17 +22,11 @@ export default class Ball{
 			dx:this.dx,
 			dy:this.dy,
 		}	
-	}	
+	}
 
-	setPosition(){
-		if(this.dx === 0){
-			this.dx = 3;
-			this.dy = 0;
-
-		}else{
-			this.dx = 0;
-			this.dy = 3;
-		}
+	dropBall(){
+		this.dx = 0;
+		this.dy = 3;	
 	}
 	
 	draw(){
