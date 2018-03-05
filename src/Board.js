@@ -1,7 +1,8 @@
 import { drawArcObj,drawRectObj } from './utils/drawUtils.js';
 
 class Peg{
-	constructor({context,x,y,id}){
+	constructor(args){
+		const { context,x,y,id} = args;
 		this.id = id;
 		this.x = x;
 		this.y = y;
@@ -23,23 +24,23 @@ class Peg{
 }
 
 export default class Board{
-	constructor({context}){	
+	constructor(args){	
+		const { context } = args;
 		this.context = context;
 		this.pegs = [];	
 	}
+
 	createPegAndDraw = () => {
 		const { width } = this.context.canvas;
 		const { context } = this;	
-		let x = 35;
+		let x = 45;
 		let y = 50;
 		let peg;
-		let padding = 10;
 			
 		//if x is outside range generate new x and y;	
 		for ( let i = 0; i < 57; i++){		
 			if(x > width){
-				let offset = peg.radius + 10;
-				x = (x + offset) % width-offset;
+				x = (x) % width;
 				y += 35;			
 			}
 			peg = new Peg({ context,x,y,id:i});	
@@ -70,9 +71,4 @@ export default class Board{
 		this.drawBottomLines();
 		this.createPegAndDraw();	
 	}
-
-	update(){
-		this.draw();
-	}
-
 }

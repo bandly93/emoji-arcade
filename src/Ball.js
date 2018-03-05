@@ -1,7 +1,8 @@
 import { drawArcObj } from './utils/drawUtils.js';
 
 export default class Ball{
-	constructor({context,x,y,dx,dy,radius,fillStyle,id}){	
+	constructor(args){
+		const { context,x,y,dx,dy,radius,fillStyle,id} = args;	
 		this.id = id;
 		this.x = x || 100;
 		this.y = y || 25;
@@ -11,15 +12,7 @@ export default class Ball{
 		this.radius = radius || 10;
 		this.context = context;
 		this.canvas_w = context.canvas.width;
-		this.canvas_h = context.canvas.height;	
-		document.addEventListener('keydown',this.keyDownHandler,false);
-		document.addEventListener('keyup',this.keyUpHandler,false);
-	}
-
-	keyDownHandler = (e) => {	
-		if(e.keyCode == 32){
-			this.switchBallDirection();
-		}
+		this.canvas_h = context.canvas.height;
 	}
 
 	get Position(){
@@ -29,17 +22,23 @@ export default class Ball{
 			dx:this.dx,
 			dy:this.dy,
 		}	
-	}
-		
-	switchBallDirection(){
-		this.dx = 0;
-		this.dy = 3;	
 	}	
+
+	setPosition(){
+		if(this.dx === 0){
+			this.dx = 3;
+			this.dy = 0;
+
+		}else{
+			this.dx = 0;
+			this.dy = 3;
+		}
+	}
 	
 	draw(){
 		drawArcObj(this);		
 	}
-		
+	
 	checkBoundaries = () => {
 		//left to right	
 		if(this.x + this.dx > this.canvas_w - this.radius || this.x + this.dx < this.radius){
@@ -50,12 +49,12 @@ export default class Ball{
 			this.dy = -this.dy
 		}
  	}
-	
 	update(){
 		this.checkBoundaries();
 		this.draw();
 		this.x += this.dx;
-		this.y += this.dy;	
+		this.y += this.dy;
+			
 	}	
 }
 

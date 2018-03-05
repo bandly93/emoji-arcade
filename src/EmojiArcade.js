@@ -15,49 +15,53 @@ class Game extends Component{
 			context:null,
 		}
 		this.pegs = [];
-		this.currentBall = {};
+		this.currentBallLocation = {};
+		this.ball = {};
 	}
 
 	componentDidMount(){
 		const { updateData,updateView } = this.props;
 		const { canvas } = this.refs;
 		this.setState({context:canvas.getContext('2d')},()=>this.startGame());		
-		window.addEventListener('resize',()=>updateView(window.innerWidth));	
+		window.addEventListener('resize',()=>updateView(window.innerWidth));
+		document.addEventListener('keydown', this.changePath.bind(this),false);
+	}
+
+	changePath(){	
+		this.ball.setPosition();
+		this.currentBallLocation = this.ball.Position;
 	}
 	
 	createBallAndDraw = (args) => {
 		const { context } = this.state;
-		let ball = new Ball({context,...args})
-		ball.draw();	
-		ball.update();
-		this.currentBall = ball.Position;
-		console.log(this.currentBall);
+		this.ball = new Ball({context,...args});
+		this.ball.update();	
+		this.currentBallLocation = this.ball.Position;	
 	}
 	
 	createBoardAndDraw = (args) => {
 		const { context } = this.state;
 		let board = new Board({context,...args});
-		board.draw();
+		board.draw();	
 		this.pegs = board.pegs;
-		board.update();		
 	}
 	
 	update(){
-		const { x,y,dx,dy }= this.currentBall;
+		const { x,y,dx,dy } = this.currentBallLocation;
 		const { context } = this.state;
 		const { width,height } = context.canvas;
 		//create new ball and board on each frame;
-		context.clearRect(0,0,context.canvas.width,context.canvas.height);	
+		context.clearRect(0,0,width,height);	
 		this.createBoardAndDraw({context});
 		this.createBallAndDraw({x,y,dx,dy});
-		this.intersect();	
-		requestAnimationFrame(()=>this.update());	
+		this.intersect();
+		requestAnimationFrame(()=>this.update());		
 	}	
 
 	intersect(){
 		let length = this.pegs.length;
-		let ball_x = this.currentBall.x;
-		let ball_y = this.currentBall.y;
+		let ball_x = this.currentBallLocation.x;
+		let ball_y = this.currentBallLocation.y;
 
 		for ( let i = 0; i < length; i++){
 			let peg_x = this.pegs[i].x;
@@ -67,15 +71,11 @@ class Game extends Component{
 			let distance = Math.sqrt(dx*dx + dy*dy);	
 			if(distance < 13){
 				console.log('collision between ball and peg', i);
-
 			}	
 		}
 	}
 	
 	startGame(){
-		//create starting ball and build board;
-		this.createBallAndDraw();
-		this.createBoardAndDraw();
 		this.update();
 	}
 		
